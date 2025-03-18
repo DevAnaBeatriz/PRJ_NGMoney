@@ -63,9 +63,13 @@
             </button>
           </div>
         
-          <button mat-flat-button color="primary" class="submit-button" type="submit" [disabled]="transactionForm.invalid">
+          <button mat-flat-button color="primary" class="submit-button"
+                  type="submit"
+                  [disabled]="transactionForm.invalid"
+                  [ngClass]="{'disabled-button': transactionForm.invalid}">
             Cadastrar
           </button>
+  
         </form>
     </div>
   </div>

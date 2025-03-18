@@ -142,3 +142,10 @@ button {
   margin: -23px 18px;
   font-size: 7pt;
 }
+
+
+.disabled-button {
+  background-color: gray !important;
+  cursor: not-allowed;
+  opacity: 0.5;
+}

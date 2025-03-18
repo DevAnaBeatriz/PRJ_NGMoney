@@ -25,6 +25,7 @@ export class AddTransactionComponent {
 
   submit(): void {
     if (this.transactionForm.valid) {
+      this.transactionForm.markAllAsTouched(); 
       const newTransaction: Transaction = {
         ...this.transactionForm.value,
         id: Math.floor(Math.random() * 100000), 
@@ -46,9 +47,11 @@ export class AddTransactionComponent {
   }
 
   setTransactionType(type: 'E' | 'S') {
-    this.selectedType = type; 
+    this.selectedType = type;
     this.transactionForm.patchValue({ tipoTransacao: type });
+    this.transactionForm.get('tipoTransacao')?.markAsTouched(); 
   }
+  
 
   close(): void {
     this.closeModal.emit();
