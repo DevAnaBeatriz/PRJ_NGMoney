@@ -1,0 +1,15 @@
+@import "~@angular/material/prebuilt-themes/deeppurple-amber.css";
+
+html, body {
+  background-color: #202024;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  width: 90%;
+  height: 90%;
+  padding: 0px;
+  align-items: center;
+}
+
+.mat-dialog-container {
+  background-color: #1E1E1E !important;
+}

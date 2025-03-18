@@ -1,0 +1,35 @@
+.navbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 0px;
+  }
+  
+  .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    z-index: 1;
+  }
+  
+  .transaction-button{
+    padding: 12px 20px;
+    background-color: #00815b;
+    color: white ;
+    height: 7vh;
+    width: 12vw;
+    min-width: 150px;
+    min-height: 45px;
+    max-width: 150px;
+    max-height: 45px;
+   
+  }
+
+  .transaction-button:hover{
+    background-color: #01533a ;
+    animation: vibrate-2-normal 1.5s ease 0s infinite normal both; 
+
+}
+
+@keyframes vibrate-2-normal {0% { transform: scale(1); } 50% { transform: scale(0.97); } 100% { transform: scale(1);} }
+

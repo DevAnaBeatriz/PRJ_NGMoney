@@ -1,0 +1,9 @@
+<app-add-transaction *ngIf="isModalOpen" (closeModal)="isModalOpen = false"> </app-add-transaction>
+<section>
+  <div class="background-div"></div>
+  <app-navbar (openModal)="isModalOpen = true"></app-navbar>
+  <main>
+    <app-list-transactions></app-list-transactions>
+  </main>
+</section>
+<router-outlet></router-outlet>
