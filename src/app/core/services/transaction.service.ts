@@ -15,7 +15,7 @@ export interface Transaction {
   providedIn: 'root'
 })
 export class TransactionService {
-  private apiUrl = 'https://server-node-transacao.onrender.com/transacao';
+  private apiUrl = 'URL-DA-API';
   
   private transactionsSubject = new BehaviorSubject<Transaction[]>([]);
   transactions$ = this.transactionsSubject.asObservable();
