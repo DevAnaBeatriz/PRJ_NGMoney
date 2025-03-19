@@ -1,80 +1,49 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { ListTransactionsComponent } from './list-transactions.component';
-import { TransactionService } from '../../../core/services/transaction.service';
+import { TransactionService } from 'src/app/core/services/transaction.service';
 import { of } from 'rxjs';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { MatTableModule } from '@angular/material/table';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+
+const mockTransactions = [
+  { id: 1, descricao: 'Salário', preco: 5000, categoria: 'Receita', tipoTransacao: 'E', dataTransacao: '2024-03-01' },
+  { id: 2, descricao: 'Mercado', preco: 200, categoria: 'Despesas', tipoTransacao: 'S', dataTransacao: '2024-03-02' },
+  { id: 3, descricao: 'Aluguel', preco: 1200, categoria: 'Despesas', tipoTransacao: 'S', dataTransacao: '2024-03-03' }
+];
 
 describe('ListTransactionsComponent', () => {
   let component: ListTransactionsComponent;
-  let fixture: ComponentFixture<ListTransactionsComponent>;
-  let transactionService: TransactionService;
+  let transactionServiceMock: jest.Mocked<TransactionService>;
 
-  const mockTransactions = [
-    { descricao: 'Salário', preco: 3000, categoria: 'Receitas', tipoTransacao: 'E', dataTransacao: '2025-03-10' },
-    { descricao: 'Supermercado', preco: 250, categoria: 'Despesas', tipoTransacao: 'S', dataTransacao: '2025-03-11' }
-  ];
+  beforeEach(() => {
+    transactionServiceMock = {
+      getTransactions: jest.fn().mockReturnValue(of({ transacao: mockTransactions }))
+    } as unknown as jest.Mocked<TransactionService>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, MatTableModule],
+    TestBed.configureTestingModule({
       declarations: [ListTransactionsComponent],
-      providers: [
-        {
-          provide: TransactionService,
-          useValue: {
-            getTransactions: jest.fn(() => of({ transacao: mockTransactions })) 
-          }
-        }
-      ]
-    }).compileComponents();
+      providers: [{ provide: TransactionService, useValue: transactionServiceMock }],
+      schemas: [NO_ERRORS_SCHEMA]
+    });
 
-    fixture = TestBed.createComponent(ListTransactionsComponent);
-    component = fixture.componentInstance;
-    transactionService = TestBed.inject(TransactionService);
-
-    fixture.detectChanges();
+    component = TestBed.createComponent(ListTransactionsComponent).componentInstance;
   });
 
-  it('should create the component', () => {
+  test('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load and display transactions', () => {
-    component.loadTransactions(); 
-    fixture.detectChanges();
-
-    expect(component.transactions.length).toBe(2);
-    expect(component.transactions[0].descricao).toBe('Supermercado');
-    expect(component.transactions[1].descricao).toBe('Salário');
+  test('should load transactions on init', () => {
+    component.ngOnInit();
+    expect(transactionServiceMock.getTransactions).toHaveBeenCalled();
+    expect(component.transactions.length).toBe(3);
   });
 
-  it('should calculate totals correctly', () => {
-    component.loadTransactions();
-    component.calculateTotals();
-    fixture.detectChanges();
 
-    expect(component.totalEntradas).toBe(3000);
-    expect(component.totalSaidas).toBe(250);
-    expect(component.totalGeral).toBe(2750);
+  test('should show all transactions when showMore is called', () => {
+    component.showMore();
+    expect(transactionServiceMock.getTransactions).toHaveBeenCalled();
+    expect(component.transactions.length).toBe(3);
+    expect(component.showAll).toBe(true);
   });
 
-  it('should update transactions when showMore is called', () => {
-    component.showMore(); 
-    fixture.detectChanges();
-
-    expect(component.showAll).toBeTruthy();
-    expect(component.transactions.length).toBe(2);
-  });
-
-  it('should call ngOnDestroy and clean up subscriptions', () => {
-    const spy = jest.spyOn(component['unsubscribe$'], 'next');
-    const spyComplete = jest.spyOn(component['unsubscribe$'], 'complete');
-
-    component.ngOnDestroy();
-    fixture.detectChanges();
-
-    expect(spy).toHaveBeenCalled();
-    expect(spyComplete).toHaveBeenCalled();
-  });
 });

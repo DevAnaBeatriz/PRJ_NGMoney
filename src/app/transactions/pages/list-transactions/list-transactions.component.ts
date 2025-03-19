@@ -11,7 +11,7 @@ import { takeUntil } from 'rxjs/operators';
 export class ListTransactionsComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['descricao', 'preco', 'categoria', 'dataTransacao'];
   transactions: Transaction[] = [];
-  transactionsSubject = new BehaviorSubject<Transaction[]>([]); 
+  transactions$ = new BehaviorSubject<Transaction[]>([]); 
   private unsubscribe$ = new Subject<void>();
 
   showAll: boolean = false;
@@ -25,21 +25,22 @@ export class ListTransactionsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadTransactions();
 
-    this.transactionsSubject.pipe(takeUntil(this.unsubscribe$)).subscribe(transactions => {
-      this.transactions = transactions.sort((a, b) => 
-        new Date(b.dataTransacao).getTime() - new Date(a.dataTransacao).getTime()
-      ).slice(0, 10);
+    this.transactions$.pipe(takeUntil(this.unsubscribe$)).subscribe(transactions => {
+      this.transactions = transactions
+        .sort((a, b) => new Date(b.dataTransacao).getTime() - new Date(a.dataTransacao).getTime())
+        .slice(0, 10);
       
-      this.calculateTotals();
+      this.calculateTotals(transactions);
     });
   }
 
   loadTransactions(): void {
     this.transactionService.getTransactions().pipe(takeUntil(this.unsubscribe$)).subscribe((data: any) => {
       const transactionsArray: Transaction[] = Array.isArray(data.transacao) ? data.transacao : [];
-      this.transactionsSubject.next(transactionsArray);
+      this.transactions$.next(transactionsArray);
     });
   }
+
 
   showMore(): void {
     if (this.showAll) return;
@@ -51,34 +52,20 @@ export class ListTransactionsComponent implements OnInit, OnDestroy {
       );
 
       this.showAll = true;
-      this.calculateTotals();
+      this.calculateTotals(transactionsArray);
     });
   }
   
-  calculateTotals(): void {
-    this.transactionService.getTransactions().subscribe((data: any) => {
-      const transactionsArray: Transaction[] = Array.isArray(data.transacao) ? data.transacao : [];
-  
-      this.totalEntradas = transactionsArray
-        .filter(t => t.tipoTransacao === 'E')
-        .reduce((sum, t) => sum + t.preco, 0);
-  
-      this.totalSaidas = transactionsArray
-        .filter(t => t.tipoTransacao === 'S')
-        .reduce((sum, t) => sum + t.preco, 0);
-  
-      this.totalGeral = this.totalEntradas - this.totalSaidas;
-    });
-  }
-  
+  calculateTotals(transactions: Transaction[]): void {
+    this.totalEntradas = transactions
+      .filter(t => t.tipoTransacao === 'E')
+      .reduce((sum, t) => sum + t.preco, 0);
 
-  openModal(): void {
-    this.isModalOpen = true;
-  }
+    this.totalSaidas = transactions
+      .filter(t => t.tipoTransacao === 'S')
+      .reduce((sum, t) => sum + t.preco, 0);
 
-  closeModal(): void {
-    this.isModalOpen = false;
-    this.loadTransactions(); 
+    this.totalGeral = this.totalEntradas - this.totalSaidas;
   }
 
   ngOnDestroy(): void {

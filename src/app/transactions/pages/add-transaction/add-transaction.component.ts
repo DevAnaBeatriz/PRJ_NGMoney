@@ -9,14 +9,13 @@ import { TransactionService, Transaction } from 'src/app/core/services/transacti
 })
 export class AddTransactionComponent {
   @Output() closeModal = new EventEmitter<void>(); 
-  @Output() transactionAdded = new EventEmitter<void>();
 
   transactionForm: FormGroup;
   selectedType: 'E' | 'S' | '' = ''; 
 
   constructor(private fb: FormBuilder, private transactionService: TransactionService) {
     this.transactionForm = this.fb.group({
-      descricao: ['', [Validators.required, Validators.minLength(3), Validators.pattern(/.*\S.*/)]], // Sem espaços vazios
+      descricao: ['', [Validators.required, Validators.minLength(3), Validators.pattern(/.*\S.*/)]], 
       preco: ['', [Validators.required, Validators.min(0.01)]], 
       categoria: ['', [Validators.required, Validators.minLength(3), Validators.pattern(/.*\S.*/)]],
       tipoTransacao: ['', Validators.required] 
@@ -28,7 +27,6 @@ export class AddTransactionComponent {
       this.transactionForm.markAllAsTouched(); 
       const newTransaction: Transaction = {
         ...this.transactionForm.value,
-        id: Math.floor(Math.random() * 100000), 
         dataTransacao: new Date().toISOString() 
       };
 
@@ -38,9 +36,8 @@ export class AddTransactionComponent {
         this.transactionForm.reset(); 
         this.selectedType = ''; 
         this.transactionForm.patchValue({ tipoTransacao: '' }); 
-
-        this.transactionAdded.emit(); 
         this.close();
+
         window.location.reload();
       });
     }
@@ -52,7 +49,6 @@ export class AddTransactionComponent {
     this.transactionForm.get('tipoTransacao')?.markAsTouched(); 
   }
   
-
   close(): void {
     this.closeModal.emit();
   }
